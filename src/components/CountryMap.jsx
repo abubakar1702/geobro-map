@@ -69,32 +69,40 @@ const CountryMap = () => {
     pickRandomCountry();
   };
 
-return (
-  <div>
-    {gameStarted && <h1 className="text-blue-600 text-center">Find: {randomCountryRef.current}</h1>}
-    <p className="text-center">Right Answers: {rightAns}</p>
-    <p className="text-center">Wrong Answers: {wrongAns}</p>
-    {!gameStarted && (
-      <button className="start-button" onClick={startGame}>
-        Start
-      </button>
-    )}
-    {gameStarted && (
-      <MapContainer
-        style={{ width: "180vh", height: "70vh" }}
-        zoom={2}
-        center={[40, 50]}
-      >
-        <GeoJSON
-          style={countryStyle}
-          data={countries.features}
-          onEachFeature={onEachCountry}
-        />
-      </MapContainer>
-    )}
-  </div>
-);
+  return (
+    <div>
+      {gameStarted && (
+        <h1 style={{ color: "#252525", fontSize: "50px" }}>
+          Find: {randomCountryRef.current}
+        </h1>
+      )}
+      {gameStarted && (
+        <h1 style={{ textAlign: "center", fontSize: '20px' }}>
+          Right: <span style={{ color: "#00cc00" }}>{rightAns}</span> | Wrong:{" "}
+          <span style={{ color: "#ff0000" }}>{wrongAns}</span>
+        </h1>
+      )}
 
+      {!gameStarted && (
+        <button className="start-button" onClick={startGame}>
+          Start
+        </button>
+      )}
+      {gameStarted && (
+        <MapContainer
+          style={{ width: "180vh", height: "70vh" }}
+          zoom={2}
+          center={[40, 50]}
+        >
+          <GeoJSON
+            style={countryStyle}
+            data={countries.features}
+            onEachFeature={onEachCountry}
+          />
+        </MapContainer>
+      )}
+    </div>
+  );
 };
 
 export default CountryMap;
