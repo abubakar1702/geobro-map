@@ -1,3 +1,19 @@
 .leaflet-container{
     background-color: rgb(83, 149, 248);
 }
+
+@media (max-width: 768px) {
+    h1 {
+      font-size: 30px;
+    }
+  
+    h1, h2 {
+      text-align: center;
+    }
+  
+    .start-button {
+      font-size: 16px;
+      padding: 10px;
+    }
+
+  }

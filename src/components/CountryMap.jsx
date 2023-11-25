@@ -17,12 +17,26 @@ const CountryMap = () => {
   const [wrongAns, setWrongAns] = useState(0);
   const [rightAns, setRightAns] = useState(0);
   const [gameStarted, setGameStarted] = useState(false);
+  const [clickedCountries, setClickedCountries] = useState([]);
 
   const randomCountryRef = useRef("");
 
   const pickRandomCountry = () => {
-    const randomIndex = Math.floor(Math.random() * countries.features.length);
-    const randomCountryName = countries.features[randomIndex].properties.ADMIN;
+    // Filter out countries that have already been clicked
+    const availableCountries = countries.features.filter(
+      (feature) => !clickedCountries.includes(feature.properties.ADMIN)
+    );
+
+    // Check if all countries are clicked
+    if (availableCountries.length === 0) {
+      setGameStarted(false);
+      alert("Game Over! You've clicked all countries.");
+      return;
+    }
+
+    const randomIndex = Math.floor(Math.random() * availableCountries.length);
+    const randomCountryName =
+      availableCountries[randomIndex].properties.ADMIN;
     setRandomCountry(randomCountryName);
     randomCountryRef.current = randomCountryName;
   };
@@ -41,16 +55,24 @@ const CountryMap = () => {
     const countryName = event.target.feature.properties.ADMIN;
     setClickedCountry(countryName);
 
-    if (countryName === randomCountryRef.current) {
+    const isCorrect = countryName === randomCountryRef.current;
+
+    event.target.setStyle({
+      color: "white",
+      fillColor: isCorrect ? "yellow" : "red",
+    });
+
+    if (isCorrect) {
       setRightAns((prevRightAns) => prevRightAns + 1);
     } else {
       setWrongAns((prevWrongAns) => prevWrongAns + 1);
     }
 
-    event.target.setStyle({
-      color: "white",
-      fillColor: "yellow",
-    });
+    // Add the clicked country to the list
+    setClickedCountries((prevClickedCountries) => [
+      ...prevClickedCountries,
+      countryName,
+    ]);
 
     pickRandomCountry();
   };
@@ -69,6 +91,10 @@ const CountryMap = () => {
     pickRandomCountry();
   };
 
+  const totalCountries = countries.features.length;
+  const totalClickedCountries = clickedCountries.length;
+  const totalRemainingCountries = totalCountries - totalClickedCountries;
+
   return (
     <div>
       {gameStarted && (
@@ -77,10 +103,26 @@ const CountryMap = () => {
         </h1>
       )}
       {gameStarted && (
-        <h1 style={{ textAlign: "center", fontSize: '20px' }}>
+        <h1 style={{ textAlign: "center", fontSize: "20px" }}>
           Right: <span style={{ color: "#00cc00" }}>{rightAns}</span> | Wrong:{" "}
           <span style={{ color: "#ff0000" }}>{wrongAns}</span>
         </h1>
+      )}
+
+      {gameStarted && (
+        <div>
+          <p style={{ textAlign: "center", fontSize: "16px", color: "#252525" }}>
+          </p>
+          <p style={{ textAlign: "center", fontSize: "16px", color: "#252525" }}>
+            Total Done: {totalClickedCountries} | Total Remain: {totalRemainingCountries}
+          </p>
+        </div>
+      )}
+
+      {!gameStarted && totalClickedCountries === totalCountries && (
+        <p style={{ textAlign: "center", fontSize: "20px", color: "#252525" }}>
+          Game Over! You've clicked all countries.
+        </p>
       )}
 
       {!gameStarted && (
@@ -88,6 +130,7 @@ const CountryMap = () => {
           Start
         </button>
       )}
+
       {gameStarted && (
         <MapContainer
           style={{ width: "180vh", height: "70vh" }}
